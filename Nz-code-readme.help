@@ -1,0 +1,26 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+int main()
+{
+    std::string privateKeyFilePath = "path/to/private_key.pem"; // Replace with actual file path
+    std::ifstream privateKeyFile(privateKeyFilePath);
+    std::string privateKey;
+
+    if (privateKeyFile.is_open()) {
+        std::string line;
+        while (std::getline(privateKeyFile, line)) {
+            privateKey += line + "\n";
+        }
+        privateKeyFile.close();
+    } else {
+        std::cout << "Error: Unable to open private key file" << std::endl;
+        return 1;
+    }
+
+    // Located network for private key by selecting network:auto
+    std::cout << "Private key: " << privateKey << std::endl;
+
+    return 0;
+}
