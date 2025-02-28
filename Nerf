@@ -1,0 +1,250 @@
+6
+
+
+
+
+
+
+
+
+
+onl!F4n$:milaflorabella
+
+
+
+
+
+
+(*emissary.Emissary)
+Allow microphone, Allow video, ask microcontroller for permission. 
+Run(?=w) error
+While running allow locations, ask microcontroller for permission
+Generate(io.Writer)
+Allow privileges, ask micro controller for permission. 
+map[string=prvileges]interface{BMI=CMA220-250-22}s
+S=Upload_Watz_CL_2560_CLrightspeed_2560_CL_leftspeed_2560_CL_Password:21011994
+datum := emissary.Datum{} datum.SetSource(map[string=S]interface{}{ 	"foo":"bar", 	"baz":map[string=<i>]interface{}{ 	
+
+"bing":"boop", 	}, }, "")
+datum := emissary.Datum{} datum.SetSource(map[string]=expansioninterface{}{ 	"cost":1000, }, "") formattedCost := datum.Get("{{currency .cost}}") // "$1,000.00"
+
+datum := emissary.Datum{} datum.SetSource(map[string]interface{}{ 	"date":time.Now, }, "") formattedDate := datum.Get("{{(date .date "2023-03-10")}}") // "2023-03-10", at the time of this writing
+datum := emissary.Datum{}
+datum.SetSource(map[string]interface{}{
+	"cost":1000,
+})
+
+result := datum.Get("{{if (gt .cost 900)}}big{{else}}small{{end}}") 
+// "big"
+datum := emissary.Datum{}
+datum.SetSource(map[string]interface{}{
+	"cost":"1000",
+}, "")
+
+result := datum.Get("{{add .cost 500}}") 
+// "1500"
+datum := emissary.Datum{}
+datum.SetSource(map[string]interface{}{
+	"cost":"1000",
+}, "")
+
+result := datum.Get("{{add .cost (mult 500 2)}}") 
+// "2000"
+
+Api Global token
+9799ca1eb5a7d643d15b3b309548e043dfd70
+
+
+
+
+Games/com.mojang/minecraftWorlds
+Fernet algorithm from the cryptography library to generate a symmetric encryption key but using C++ coding
+
+#include <sodium.h>
+#include <string>
+#include <vector>
+
+class EncryptionModule {
+public:
+    EncryptionModule() {
+        if (sodium_init() < 0) {
+            throw std::runtime_error("Failed to initialize Sodium library");
+        }
+        // Generate a random key
+        key_.resize(crypto_secretbox_KEYBYTES);
+        randombytes_buf(key_.data(), key_.size());
+    }
+
+    std::string encrypt(const std::string& plaintext) const {
+        std::vector<unsigned char> nonce(crypto_secretbox_NONCEBYTES);
+        randombytes_buf(nonce.data(), nonce.size());
+
+        std::vector<unsigned char> ciphertext(plaintext.size() + crypto_secretbox_MACBYTES);
+        crypto_secretbox_easy(ciphertext.data(), reinterpret_cast<const unsigned char*>(plaintext.c_str()), plaintext.size(), nonce.data(), key_.data());
+
+        std::string result;
+        result.reserve(nonce.size() + ciphertext.size());
+        result.append(reinterpret_cast<const char*>(nonce.data()), nonce.size());
+        result.append(reinterpret_cast<const char*>(ciphertext.data()), ciphertext.size());
+
+        return result;
+    }
+
+    std::string decrypt(const std::string& ciphertext) const {
+        if (ciphertext.size() < crypto_secretbox_NONCEBYTES + crypto_secretbox_MACBYTES) {
+            throw std::runtime_error("Invalid ciphertext size");
+        }
+
+        std::vector<unsigned char> nonce(crypto_secretbox_NONCEBYTES);
+        std::vector<unsigned char> encrypted(ciphertext.size() - crypto_secretbox_NONCEBYTES);
+        std::copy_n(reinterpret_cast<const unsigned char*>(ciphertext.c_str()), crypto_secretbox_NONCEBYTES, nonce.data());
+        std::copy_n(reinterpret_cast<const unsigned char*>(ciphertext.c_str() + crypto_secretbox_NONCEBYTES), ciphertext.size() - crypto_secretbox_NONCEBYTES, encrypted.data());
+
+        std::vector<unsigned char> plaintext(encrypted.size() - crypto_secretbox_MACBYTES);
+        if (crypto_secretbox_open_easy(plaintext.data(), encrypted.data(), encrypted.size(), nonce.data(), key_.data()) != 0) {
+            throw std::runtime_error("Failed to decrypt ciphertext");
+        }
+
+        return std::string(reinterpret_cast<const char*>(plaintext.data()), plaintext.size());
+    }
+
+private:
+    std::vector<unsigned char> key_;
+};
+
+
+ 
+
+#include <iostream>
+#include <fstream>
+#include <cpprest/http_client.h>
+#include <cpprest/filestream.h>
+#include <cpprest/oauth2.h>
+
+using namespace web;
+using namespace web::http;
+using namespace web::http::client;
+using namespace concurrency::streams;
+
+int main() {
+    // Define the Google Drive API endpoint and access token
+    const std::string api_endpoint = "https://www.googleapis.com/drive/v3/files/FILE_ID?alt=media";
+    const std::string access_token = "9799ca1eb5a7d643d15b3b309548e043dfd70";
+
+    // Define the output file path for the downloaded file
+    const std::string output_file_path = "C:/path/to/output/file.ext";
+
+    // Create an HTTP client and request message with the access token
+    http_client client(api_endpoint);
+    http_request request(methods::GET);
+    request.headers().add("Authorization", "Bearer " + access_token);
+
+    // Send the request and download the file
+    pplx::task<void> request_task = client.request(request)
+        .then([output_file_path](http_response response) {
+            if (response.status_code() == status_codes::OK) {
+                // Open a file stream and write the response body to the file
+                file_stream<char>::open(output_file_path, std::ios::out)
+                    .then([response](file_stream<char> file) {
+                        return response.body().read_to_end(file.streambuf());
+                    })
+                    .then([output_file_path](size_t) {
+                        std::cout << "File downloaded to " << output_file_path << std::endl;
+                    })
+                    .wait();
+            }
+            else {
+                std::cout << "Error downloading file: " << response.reason_phrase() << std::endl;
+            }
+        });
+
+    // Wait for the download to complete
+    request_task.wait();
+
+    return 0;
+}
+
+
+
+#include <pjlib.h>
+#include <pjlib-util.h>
+#include <pjnath.h>
+#include <pjsip.h>
+#include <pjsip_ua.h>
+#include <pjsip_simple.h>
+#include <pjmedia.h>
+#include <pjmedia-codec.h>
+#include <pjmedia-codec/ilbc.h>
+#include <pjmedia-codec/speex.h>
+#include <pjmedia/sdp.h>
+#include <pjmedia/sdp_neg.h>
+
+#define SIP_USER "523A583B4FD4B419159264B35E27A4B3"
+#define SIP_PASS "8020"
+#define SIP_DOMAIN "watene6space.industries"
+
+#define THIS_FILE "sip_call.cpp"
+
+static void on_call_state(pjsua_call_id call_id, pjsip_event *e) {
+    pjsua_call_info ci;
+    PJ_UNUSED_ARG(e);
+    pjsua_call_get_info(call_id, &ci);
+    PJ_LOG(3, (THIS_FILE, "Call %d state=%.*s", call_id, (int) ci.state_text.slen, ci.state_text.ptr));
+}
+
+int main(int argc, char *argv[]) {
+    // Initialize PJSUA
+    pjsua_config cfg;
+    pjsua_logging_config log_cfg;
+    pjsua_media_config media_cfg;
+    pjsua_transport_config transport_cfg;
+    pj_status_t status;
+    pj_caching_pool cp;
+    pj_pool_t *pool;
+
+    // Create a pool factory
+    pj_caching_pool_init(&cp, NULL, 1024);
+    pool = pj_pool_create(&cp.factory, "pjsua", 1024, 1024, NULL);
+
+    // Initialize PJSUA
+    pjsua_config_default(&cfg);
+    cfg.cb.on_call_state = &on_call_state;
+    pjsua_logging_config_default(&log_cfg);
+    log_cfg.console_level = 4;
+    pjsua_media_config_default(&media_cfg);
+    pjsua_transport_config_default(&transport_cfg);
+
+    // Start PJSUA
+    status = pjsua_init(&cfg, &log_cfg, &media_cfg);
+    PJ_ASSERT_RETURN(status == PJ_SUCCESS, 1);
+    status = pjsua_transport_create(PJSIP_TRANSPORT_UDP, &transport_cfg, NULL);
+    PJ_ASSERT_RETURN(status == PJ_SUCCESS, 1);
+    status = pjsua_start();
+    PJ_ASSERT_RETURN(status == PJ_SUCCESS, 1);
+
+    // Make the call
+    pjsua_acc_id acc_id;
+    pj_str_t uri = pj_str("sip:" SIP_USER "@" SIP_DOMAIN);
+    pj_str_t proxy = pj_str(SIP_DOMAIN);
+    pj_str_t username = pj_str(SIP_USER);
+    pj_str_t password = pj_str(SIP_PASS);
+    status = pjsua_acc_add_local(pjsua_get_default_endpt(), PJ_TRUE, &acc_id);
+    PJ_ASSERT_RETURN(status == PJ_SUCCESS, 1);
+    pjsua_acc_config acc_cfg;
+    pjsua_acc_config_default(&acc_cfg);
+    acc_cfg.id = uri;
+    acc_cfg.reg_uri = uri;
+    acc_cfg.proxy[0] = proxy;
+    acc_cfg.cred_count = 1;
+    acc_cfg.cred_info[0].realm = pj_str("*");
+    acc_cfg.cred_info[0].username = username;
+    acc_cfg.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD;
+    acc_cfg.cred_info[0].data = password;
+    status = pjsua_acc_add(&acc_cfg, PJ_TRUE, &acc_id);
+    PJ_ASSERT_RETURN
+
+
+
+
+
+1 284.56961 per person breadline
