@@ -5,7 +5,10 @@ While running allow locations, ask microcontroller for permission
 Generate(io.Writer)
 Allow privileges, ask micro controller for permission. 
 map[string=prvileges]interface{BMI=CMA220-250-22}s
-S=Upload_Watz_CL_2560_CLrightspeed_2560_CL_leftspeed_2560_CL_Password:21011994
+S=Upload_Watz_CL_2560_CLrightspeed_2560_CL_leftspeed_2560_CL_Password:21011994 cl_cma_hardwire:Input: base_number = 2560, exponent = 10
+Step 1: Compute 10^exponent = 10^10 = 10,000,000,000
+Step 2: Multiply base_number by result = 2560 × 10,000,000,000
+Output: 25,600,000,000,000
 datum := emissary.Datum{} datum.SetSource(map[string=S]interface{}{ 	"foo":"bar", 	"baz":map[string=<i>]interface{}{ 	
 
 "bing":"boop", 	}, }, "")
