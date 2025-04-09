@@ -38,7 +38,7 @@ result := datum.Get("{{add .cost (mult 500 2)}}")
 // "2000"
 
 Api Global token
-9799ca1eb5a7d643d15b3b309548e043dfd70
+uH04neY5hdLgzz889RKbdArfxrPCVlPA
 
 
 
